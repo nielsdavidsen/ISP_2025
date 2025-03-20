@@ -37,20 +37,17 @@ port (
     clock           : in  std_logic;
     reset           : in  std_logic;
     digital_input   : in  unsigned(11 downto 0);
-    --crossing        : out std_logic;
+    write_en        : out std_logic;
     counter         : out integer := 0
-    
+ 
     
 );
 
 end tuner;
 
 architecture Behavioral of tuner is
-
-    signal prev_input   : unsigned(11 downto 0)    := (others => '0');
     signal counter_i    : integer                  := 0;
-    --signal signed_prev  : integer                   := 0;
-     
+
 
 
 begin
@@ -60,29 +57,32 @@ begin
     begin 
            if rising_edge(clock) then
             if reset = '1' then
-                --crossing <= '0';
+                write_en <= '0';
                 counter_i <= 0;
-                --digital_input <= (others => '0');
                 
             else 
-                prev_input <= digital_input;
+                write_en <= '0';
                 
-                if prev_input > x"800" then
-                   --crossing <= '1';
+                if digital_input > x"800" then
                    counter_i <= counter_i + 1;
                    
-                elsif prev_input < x"800" then
+                elsif digital_input < x"800" and digital_input >= x"400" then
+                    counter_i <= counter_i;
+                    if counter_i > 0 then
+                        write_en <= '1';
+                    end if;
+                    
+                elsif digital_input < x"400" then
                     counter_i <= 0;
-                   
+                  
+
                 end if;
-                prev_input <= digital_input;
             end if;
-            counter <= counter_i;
-            
           end if;
           
         end process;
                    
+ counter <= counter_i;
                  
             
    

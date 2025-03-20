@@ -43,8 +43,10 @@ architecture Behavioral of tuner_tb is
 
     signal clock            : std_logic             := '0';
     signal reset            : std_logic             := '0';
+    signal counter          : integer               := 0;
     signal halfperiod       : integer               := 0;
     signal input_signal     : unsigned(11 downto 0) := (others => '0');
+    signal write_en    : std_logic             := '0';
     
 begin
 
@@ -53,6 +55,7 @@ dut0: entity work.tuner
     port map(
         clock               => clock,
         reset               => reset,
+        write_en            => write_en,
         digital_input       => input_signal,
         counter             => halfperiod
     );
@@ -74,7 +77,9 @@ dut0: entity work.tuner
                     '1' when counter = 1 else
                     '0';
 
-    input_signal  <=    x"FFF" when counter > 4 and counter < 11 else
+    input_signal  <=    x"600" when counter > 5 and counter <= 10 else
+                        x"FFF" when counter > 10 and counter <= 15 else
+                        x"600" when counter > 15 and counter <= 20 else
                         x"000";
 
 end Behavioral;
